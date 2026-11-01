@@ -27,6 +27,15 @@ def create_short_url(payload: URLCreate, db: Session = Depends(get_db)):
 
     return nouvelle_url
 
+@router.get("/stats/{code}", response_model=URLOut)
+def get_url_stats(code: str, db: Session = Depends(get_db)):
+    url_entry = db.query(URL).filter_by(short_code=code).first()
+
+    if url_entry is None:
+        raise HTTPException(status_code=404, detail="Code introuvable")
+
+    return url_entry
+
 
 @public_router.get("/{code}")
 def redirect_to_original(code: str, db: Session = Depends(get_db)):
